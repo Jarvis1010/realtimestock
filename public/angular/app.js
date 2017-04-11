@@ -6,7 +6,7 @@ function StockController($scope){
     var socket =io.connect(window.location.href);
     socket.on('add',(data)=>{
         $scope.stocks=data;
-        console.log($scope.stocks);
+        $scope.$apply();
     });
     
     socket.emit('join');
@@ -21,7 +21,13 @@ function StockController($scope){
        if(!found){
         $scope.stocks.push($scope.stockToAdd);
         socket.emit('add',$scope.stocks);
+        $scope.stockToAdd='';
        }
+    };
+    
+    $scope.removeStock=function(index){
+       $scope.stocks.splice(index,1);
+        socket.emit('add',$scope.stocks);
     };
     
 }

@@ -36,7 +36,7 @@ io.on('connection',(client)=>{
     });
     
     client.on('add',(data)=>{
-        Stock.findOneAndUpdate({},{stocks:data},{upsert:true},(err,result)=>{
+        Stock.findOneAndUpdate({},{stocks:data},{upsert:true,new:true},(err,result)=>{
             stocks=result.stocks;
             client.broadcast.emit('add',stocks);
             client.emit('add',stocks);
