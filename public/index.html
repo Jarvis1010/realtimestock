@@ -14,15 +14,22 @@
     </head>
     <body>
         <div ng-controller="StockController" class="container">
-            <input type="text" ng-model="stockToAdd"/>
-            <button ng-click="onSubmit()">Submit</button>
-            
-            <div class="panel panel-default">
-              <div ng-repeat="stock in stocks track by $index" class="panel-body">
-                {{stock}}<span ng-click="removeStock($index)" class="glyphicon glyphicon-remove pull-right"></span>
-              </div>
+            <div id="chart" class="row">
+                
             </div>
-            
+            <section class="row">
+                <div ng-repeat="stock in stocks track by $index" class="panel panel-default col-xs-2">
+                  <div class="panel-body">
+                    {{stock}}<span ng-click="removeStock($index)" class="glyphicon glyphicon-remove pull-right"></span>
+                  </div>
+                </div>
+                <div class="col-xs-12"><hr/></div>
+                <form ng-submit="onSubmit()" class="col-xs-6">
+                    <input type="text" ng-model="stockToAdd"/>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </form>
+                
+            </section>
         </div>
         
         <!--scripts-->
