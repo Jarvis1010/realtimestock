@@ -100,7 +100,7 @@ function StockController($scope,$http){
         var data = google.visualization.arrayToDataTable(createDataTable());
 
         var options = {
-           title: 'Historical Prices',
+           title: '100 Days of Historical Prices',
            legend: { position: 'side' },
             width: '80%',
             height: 500
