@@ -33,24 +33,32 @@ function StockController($scope,$http){
     };
     
     function getStocks(){
+        $scope.stockData=[];
         $scope.stocks.forEach((symbol)=>{
             getData(symbol);
         });
+        console.log($scope.stockData);
     }
     
     function getData(symbol){
+       
         let startDate="2016-11-01";
         let endDate="2017-04-01";
-        let url = "https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20yahoo.finance.historicaldata%20where%20symbol%20=%20%22"
+        let url = "https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20yahoo.finance.historicaldata%20where%20symbol%20in%20(%22"
         +symbol+
-        "%22%20and%20startDate%20=%20%22"
+        "%22)%20and%20startDate%20=%20%22"
         +startDate+
         "%22%20and%20endDate%20=%20%22"
         +endDate+
         "%22&env=store://datatables.org/alltableswithkeys&format=json&callback=";
-        console
+        
         $http.get(url).then((results)=>{
-            console.log(results.data);
+            let quotes=results.data.query.results.quote;
+            let symbol=quotes[0].Symbol;
+            let prices=quotes.map((quote)=>{
+                return {date:quote.Date,close:quote.Close};
+            });
+            $scope.stockData.push({symbol:symbol,prices:prices});
         });
     }
 }
