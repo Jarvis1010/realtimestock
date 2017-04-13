@@ -3,6 +3,7 @@ var app = angular.module('realtimestock',[]);
 app.controller('StockController',StockController);
 
 function StockController($scope,$http){
+    google.charts.load('current', {'packages':['line']});
     var socket =io.connect(window.location.href);
     socket.on('add',(data)=>{
         $scope.stocks=data;
@@ -14,6 +15,8 @@ function StockController($scope,$http){
     
     $scope.stocks=[];
     $scope.stockData=[];
+    
+    $scope.$watchCollection('stockData',drawChart);
     
     $scope.onSubmit=function(){
        var found=$scope.stocks.find((stock)=>{
@@ -37,7 +40,7 @@ function StockController($scope,$http){
         $scope.stocks.forEach((symbol)=>{
             getData(symbol);
         });
-        console.log($scope.stockData);
+       
     }
     
     function getData(symbol){
@@ -60,6 +63,52 @@ function StockController($scope,$http){
             });
             $scope.stockData.push({symbol:symbol,prices:prices});
         });
+    }
+    
+    function createDataTable(){
+        let dataTable=[];
+        
+        let row1=['Date'];
+        let rows=[];
+        for(var i =0;i<$scope.stockData.length;i++){
+            var stockData=$scope.stockData[i];
+            row1.push(stockData.symbol);
+            for(var j=0;j<stockData.prices.length;j++){
+                
+                var price=stockData.prices[j];
+                
+                if(i>0){
+                    rows[j].push(price.close);
+                }else{
+                    rows.push([price.date,price.close]);
+                }
+            }
+        }
+        
+        dataTable.push(row1);
+        rows.forEach((row)=>{
+            dataTable.push(row);
+        });
+        console.log(dataTable);
+        return dataTable;
+    }
+    
+    function drawChart() {
+    
+      //console.log(createDataTable());
+      var data = google.visualization.arrayToDataTable(createDataTable());
+
+      var options = {
+        chart: {
+          title: 'Historical Prices',
+        },
+        width: '80%',
+        height: 500
+      };
+
+      var chart = new google.charts.Line(document.getElementById('chart'));
+
+      chart.draw(data, options);
     }
 }
 
