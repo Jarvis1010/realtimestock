@@ -3,7 +3,7 @@ var app = angular.module('realtimestock',[]);
 app.controller('StockController',StockController);
 
 function StockController($scope,$http){
-    google.charts.load('current', {'packages':['line']});
+    google.charts.load('current', {'packages':['corechart']});
     var socket =io.connect(window.location.href);
     socket.on('add',(data)=>{
         $scope.stocks=data;
@@ -44,9 +44,11 @@ function StockController($scope,$http){
     }
     
     function getData(symbol){
+        let start = new Date();
+        start.setDate(start.getDate()-100);
+        let startDate=start.toISOString().slice(0,10).replace(/-/g,"-");
+        let endDate=(new Date()).toISOString().slice(0,10).replace(/-/g,"-");
        
-        let startDate="2016-11-01";
-        let endDate="2017-04-01";
         let url = "https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20yahoo.finance.historicaldata%20where%20symbol%20in%20(%22"
         +symbol+
         "%22)%20and%20startDate%20=%20%22"
@@ -72,15 +74,14 @@ function StockController($scope,$http){
         let rows=[];
         for(var i =0;i<$scope.stockData.length;i++){
             var stockData=$scope.stockData[i];
+            
             row1.push(stockData.symbol);
             for(var j=0;j<stockData.prices.length;j++){
-                
-                var price=stockData.prices[j];
-                
-                if(i>0){
-                    rows[j].push(price.close);
-                }else{
-                    rows.push([price.date,price.close]);
+                var price =stockData.prices[j];
+                if(i===0){
+                    rows.push([price.date,parseFloat(price.close)]);
+                }else{  
+                    rows[j].push(parseFloat(price.close));
                 }
             }
         }
@@ -89,26 +90,27 @@ function StockController($scope,$http){
         rows.forEach((row)=>{
             dataTable.push(row);
         });
-        console.log(dataTable);
+        
         return dataTable;
     }
     
     function drawChart() {
-    
-      //console.log(createDataTable());
-      var data = google.visualization.arrayToDataTable(createDataTable());
+    if($scope.stocks.length==$scope.stockData.length){
 
-      var options = {
-        chart: {
-          title: 'Historical Prices',
-        },
-        width: '80%',
-        height: 500
-      };
+        var data = google.visualization.arrayToDataTable(createDataTable());
 
-      var chart = new google.charts.Line(document.getElementById('chart'));
+        var options = {
+           title: 'Historical Prices',
+           legend: { position: 'side' },
+            width: '80%',
+            height: 500
+        };
 
-      chart.draw(data, options);
+       var chart = new google.visualization.LineChart(document.getElementById('chart'));
+
+       chart.draw(data, options);
+      }
+        
     }
 }
 

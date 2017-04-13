@@ -18,16 +18,18 @@
                 
             </div>
             <section class="row">
+                <form ng-submit="onSubmit()" class="col-xs-8 form-inline">
+                    <input class ="form-control" type="text" ng-model="stockToAdd" placeholder="Enter symbol to add"/>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </form>
+                <div class="col-xs-12"><hr/></div>
                 <div ng-repeat="stock in stocks track by $index" class="panel panel-default col-xs-2">
                   <div class="panel-body">
                     {{stock}}<span ng-click="removeStock($index)" class="glyphicon glyphicon-remove pull-right"></span>
                   </div>
                 </div>
-                <div class="col-xs-12"><hr/></div>
-                <form ng-submit="onSubmit()" class="col-xs-6">
-                    <input type="text" ng-model="stockToAdd"/>
-                    <button type="submit" class="btn btn-primary">Submit</button>
-                </form>
+                
+                
                 
             </section>
         </div>
